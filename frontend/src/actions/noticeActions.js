@@ -1,4 +1,5 @@
 import axios from "axios";
+// import { useHistory } from 'react-router-dom';
 
 import {
   ALL_NOTICE_REQUEST,
@@ -11,6 +12,12 @@ import {
   CREATE_NOTICE_REQUEST,
   CREATE_NOTICE_SUCCESS,
   CREATE_NOTICE_FAIL,
+  UPDATE_NOTICE_SUCCESS,
+  UPDATE_NOTICE_FAIL,
+  UPDATE_NOTICE_REQUEST,
+  DELETE_NOTICE_REQUEST,
+  DELETE_NOTICE_SUCCESS,
+  DELETE_NOTICE_FAIL,
 } from "../constants/noticeConstants";
 
 export const createNotice = (title, content) => async (dispatch) => {
@@ -36,7 +43,9 @@ export const createNotice = (title, content) => async (dispatch) => {
       type: CREATE_NOTICE_SUCCESS,
       payload: data,
     });
+    window.location.href = "/";
   } catch (error) {
+    console.log(error);
     dispatch({
       type: CREATE_NOTICE_FAIL,
       payload: error.response.data.message,
@@ -45,16 +54,12 @@ export const createNotice = (title, content) => async (dispatch) => {
 };
 
 export const getNotice =
-  (keyword = "", currentPage = 1, price, category, rating = 0) =>
+  (currentPage = 1) =>
   async (dispatch) => {
     try {
       dispatch({ type: ALL_NOTICE_REQUEST });
 
-      let link = `/api/v1/NOTICE?keyword=${keyword}&page=${currentPage}&price[lte]=${price[1]}&price[gte]=${price[0]}&ratings[gte]=${rating}`;
-
-      if (category) {
-        link = `/api/v1/NOTICE?keyword=${keyword}&page=${currentPage}&price[lte]=${price[1]}&price[gte]=${price[0]}&category=${category}&ratings[gte]=${rating}`;
-      }
+      let link = `/api/v1/NOTICE?page=${currentPage}`;
 
       const { data } = await axios.get(link);
 
@@ -91,7 +96,7 @@ export const getNoticeDetails = (id) => async (dispatch) => {
 export const updateNotice = (title, content, id) => async (dispatch) => {
   console.log(title, content);
   try {
-    dispatch({ type: CREATE_NOTICE_REQUEST });
+    dispatch({ type: UPDATE_NOTICE_REQUEST });
     let token = localStorage.getItem("token");
 
     const config = {
@@ -108,12 +113,42 @@ export const updateNotice = (title, content, id) => async (dispatch) => {
     );
 
     dispatch({
-      type: CREATE_NOTICE_SUCCESS,
+      type: UPDATE_NOTICE_SUCCESS,
       payload: data,
     });
   } catch (error) {
     dispatch({
-      type: CREATE_NOTICE_FAIL,
+      type: UPDATE_NOTICE_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const deleteNotice = (id) => async (dispatch) => {
+  try {
+    dispatch({ type: DELETE_NOTICE_REQUEST });
+    let token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    };
+
+    const { data } = await axios.delete(
+      `http://localhost:4000/api/v1/notice/${id}`,
+      config
+    );
+
+    dispatch({
+      type: DELETE_NOTICE_SUCCESS,
+      payload: data,
+    });
+    window.location.href = "/";
+  } catch (error) {
+    dispatch({
+      type: DELETE_NOTICE_FAIL,
       payload: error.response.data.message,
     });
   }

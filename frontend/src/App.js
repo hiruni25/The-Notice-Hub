@@ -27,8 +27,7 @@ function App() {
         <Header />
         <div className="container container-fluid">
           <Route path="/" component={Home} exact />
-          <Route path="/search/:keyword" component={Home} />
-          <Route path="/product/:id" component={NoticeDetails} exact />
+          <Route path="/notice/:id" component={NoticeDetails} exact />
           <Route path="/login" component={Login} />
           <Route path="/create-notice" component={CreateNotice} />
         </div>

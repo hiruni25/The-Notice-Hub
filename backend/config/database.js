@@ -1,7 +1,4 @@
 const mongoose = require('mongoose');
-const {
-    registerAdmin
-  } = require("../controllers/authController");
 
 const connectDatabase = () => {
     console.log(process.env.DB_LOCAL_URI)

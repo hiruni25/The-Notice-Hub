@@ -24,8 +24,7 @@ exports.getNotices = catchAsyncErrors (async (req, res, next) => {
     const noticesCount = await Notice.countDocuments()
 
     const apiFeatures = new APIFeatures(Notice.find(), req.query)
-        .search()
-        .filter()
+        
         
     let notices = await apiFeatures.query;
     let filteredNoticeCount = Notice.length;

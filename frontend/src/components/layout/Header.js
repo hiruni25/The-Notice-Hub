@@ -3,12 +3,21 @@ import { Link, Route } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { useAlert } from "react-alert";
 import "../../App.css";
+import { useHistory } from "react-router-dom";
 
 const Header = () => {
   const alert = useAlert();
   const dispatch = useDispatch();
+  const history = useHistory();
+
 
   const { user, loading } = useSelector((state) => state.auth);
+
+  const logOut = () => {
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
+    history.push("/");
+  }
 
   return (
     <Fragment>
@@ -47,24 +56,8 @@ const Header = () => {
                 className="dropdown-menu"
                 aria-lablledby="dropDownMenuButton"
               >
-                {user && user.role !== "admin" ? (
-                  <Link className="dropdown-item" to="/orders/me">
-                    {" "}
-                    Orders{" "}
-                  </Link>
-                ) : (
-                  <Link className="dropdown-item" to="/dashboard">
-                    {" "}
-                    Dashboard{" "}
-                  </Link>
-                )}
-
-                <Link className="dropdown-item" to="/profile">
-                  {" "}
-                  Profile{" "}
-                </Link>
-                <Link className="dropdown-item text-danger" to="/">
-                  Logout
+                <Link className="dropdown-item text-danger" >
+                  <span onClick={logOut}>Logout</span>
                 </Link>
               </div>
             </div>

@@ -1,3 +1,4 @@
+import { useHistory } from 'react-router-dom'
 import { 
     ALL_NOTICE_REQUEST, 
     ALL_NOTICE_SUCCESS, 
@@ -8,10 +9,16 @@ import {
     CLEAR_ERRORS,
     CREATE_NOTICE_REQUEST,
     CREATE_NOTICE_SUCCESS,
-    CREATE_NOTICE_FAIL
+    CREATE_NOTICE_FAIL,
+    UPDATE_NOTICE_REQUEST,
+    UPDATE_NOTICE_SUCCESS,
+    UPDATE_NOTICE_FAIL,
+    DELETE_NOTICE_FAIL,
+    DELETE_NOTICE_SUCCESS,
+    DELETE_NOTICE_REQUEST
 } from '../constants/noticeConstants'
 
-export const noticesReducer = (state = { products: [] }, action) => {
+export const noticesReducer = (state = { notices: [] }, action) => {
     switch(action.type) {
         case CREATE_NOTICE_REQUEST:
             return {
@@ -23,7 +30,6 @@ export const noticesReducer = (state = { products: [] }, action) => {
             return {
                 ...state,
                 loading: false,
-                isAuthenticated: true,
                 notice: action.payload
             }
         case CREATE_NOTICE_FAIL:
@@ -36,14 +42,14 @@ export const noticesReducer = (state = { products: [] }, action) => {
         case ALL_NOTICE_REQUEST:
             return {
                 loading: true,
-                products: []
+                notices: []
             }
 
         case ALL_NOTICE_SUCCESS:
             return {
                 loading: false,
                 notices: action.payload.notices,
-                productsCount : action.payload.noticesCount,                
+                noticesCount : action.payload.noticesCount,                
                 resPerPage : action.payload.resPerPage,
                 filteredProductsCount: action.payload.filteredNoticeCount
             }
@@ -65,22 +71,28 @@ export const noticesReducer = (state = { products: [] }, action) => {
     }
 }
 
-export const noticeDetailsReducer = (state = { product : {} }, action) => {
+export const noticeDetailsReducer = (state = { notice : {} }, action) => {
     switch(action.type) {
 
         case NOTICE_DETAILS_REQUEST:
+        case UPDATE_NOTICE_REQUEST:
+        case DELETE_NOTICE_REQUEST:
             return {
                 ...state,
                 loading: true
             }
         
         case NOTICE_DETAILS_SUCCESS:
+        case UPDATE_NOTICE_SUCCESS:
+        case DELETE_NOTICE_SUCCESS:
             return {
                 loading: false,
-                product: action.payload
+                notice: action.payload
             }
 
         case NOTICE_DETAILS_FAIL:
+        case UPDATE_NOTICE_FAIL:
+        case DELETE_NOTICE_FAIL:
             return {
                 ...state,
                 error: action.payload

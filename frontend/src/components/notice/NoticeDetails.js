@@ -4,6 +4,7 @@ import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
 import {
   clearErrors,
+  deleteNotice,
   getNoticeDetails,
   updateNotice,
 } from "../../actions/noticeActions";
@@ -12,6 +13,10 @@ const NoticeDetails = ({ match }) => {
   const dispatch = useDispatch();
   const alert = useAlert();
   const noticeDetails = useSelector((state) => state.noticeDetails);
+  const { isAuthenticated, error, loading } = useSelector(
+    (state) => state.auth
+  );
+
   const [updateNoticeData, setUpdateNoticeData] = useState({
     updateTitle: "",
     updateContent: "",
@@ -40,7 +45,11 @@ const NoticeDetails = ({ match }) => {
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(
-      updateNotice(updateNoticeData.updateTitle, updateNoticeData.updateContent)
+      updateNotice(
+        updateNoticeData.updateTitle,
+        updateNoticeData.updateContent,
+        match.params.id
+      )
     );
   };
 
@@ -49,6 +58,15 @@ const NoticeDetails = ({ match }) => {
       ...updateNoticeData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const deleteHandler = (e) => {
+    e.preventDefault();
+    dispatch(
+      deleteNotice(
+        match.params.id
+      )
+    );
   };
 
   return (
@@ -64,17 +82,30 @@ const NoticeDetails = ({ match }) => {
               <hr />
               <p>{noticeDetails.notice.content}</p>
               <hr />
+              {isAuthenticated ? (
+                <>
+                  <button
+                    id="review_btn"
+                    type="button"
+                    className="btn btn-primary mt-4"
+                    data-toggle="modal"
+                    data-target="#ratingModal"
+                  >
+                    Edit
+                  </button>
 
-              <button
-                id="review_btn"
-                type="button"
-                className="btn btn-primary mt-4"
-                data-toggle="modal"
-                data-target="#ratingModal"
-              >
-                Edit
-              </button>
-
+                  <button
+                    id="review_btn"
+                    type="button"
+                    className="btn btn-primary mt-4 ml-2"
+                    onClick={(e)=> deleteHandler(e)}
+                  >
+                    Delete
+                  </button>
+                </>
+              ) : (
+                <></>
+              )}
               <div className="row mt-2 mb-5">
                 <div className="rating w-50">
                   <div
