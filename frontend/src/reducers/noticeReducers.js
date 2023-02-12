@@ -42,10 +42,10 @@ export const noticesReducer = (state = { products: [] }, action) => {
         case ALL_NOTICE_SUCCESS:
             return {
                 loading: false,
-                products: action.payload.products,
-                productsCount : action.payload.productsCount,
+                notices: action.payload.notices,
+                productsCount : action.payload.noticesCount,                
                 resPerPage : action.payload.resPerPage,
-                filteredProductsCount: action.payload.filteredProductsCount
+                filteredProductsCount: action.payload.filteredNoticeCount
             }
 
         case ALL_NOTICE_FAIL:

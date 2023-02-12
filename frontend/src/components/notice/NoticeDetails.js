@@ -1,90 +1,68 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Carousel } from "react-bootstrap";
 import { useAlert } from "react-alert";
 import { useDispatch, useSelector } from "react-redux";
-import { clearErrors, getNoticeDetails } from "../../actions/noticeActions";
-
+import {
+  clearErrors,
+  getNoticeDetails,
+  updateNotice,
+} from "../../actions/noticeActions";
 
 const NoticeDetails = ({ match }) => {
   const dispatch = useDispatch();
   const alert = useAlert();
-
-  const { loading, error, product } = useSelector(
-    (state) => state.productDetails
-  );
+  const noticeDetails = useSelector((state) => state.noticeDetails);
+  const [updateNoticeData, setUpdateNoticeData] = useState({
+    updateTitle: "",
+    updateContent: "",
+  });
 
   useEffect(() => {
     dispatch(getNoticeDetails(match.params.id));
+  }, [dispatch, match.params.id]);
 
-    if (error) {
-      alert.error(error);
+  useEffect(() => {
+    if (noticeDetails.error) {
+      alert.error(noticeDetails.error);
       dispatch(clearErrors());
     }
-  }, [dispatch, alert, error, match.params.id]);
+  }, [dispatch, alert, noticeDetails.error]);
+
+  useEffect(() => {
+    if (noticeDetails.notice) {
+      setUpdateNoticeData({
+        updateTitle: noticeDetails.notice.title,
+        updateContent: noticeDetails.notice.content,
+      });
+    }
+  }, [noticeDetails.notice]);
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+    dispatch(
+      updateNotice(updateNoticeData.updateTitle, updateNoticeData.updateContent)
+    );
+  };
+
+  const onChange = (e) => {
+    setUpdateNoticeData({
+      ...updateNoticeData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   return (
     <Fragment>
-      {loading ? (
+      {noticeDetails.loading ? (
         <div className="loader"></div>
       ) : (
         <Fragment>
           <div className="row f-flex justify-content-around">
-            <div className="col-12 col-lg-5 img-fluid" id="product_image">
-              <Carousel pause="hover">
-                {product.images &&
-                  product.images.map((image) => (
-                    <Carousel.Item key={image.public_id}>
-                      <img
-                        className="d-block w-100"
-                        src={image.url}
-                        alt={product.title}
-                      />
-                    </Carousel.Item>
-                  ))}
-              </Carousel>
-            </div>
-
             <div className="col-12 col-lg-5 mt-5">
-              <h3>{product.name}</h3>
-              <p id="product_id">Product # {product._id}</p>
-
+              <h1>{noticeDetails.notice.title}</h1>
+              <p id="noticet_id">Notice # {noticeDetails.notice._id}</p>
               <hr />
-
-              <div className="rating-outer">
-                <div
-                  className="rating-inner"
-                  style={{ width: `${(product.ratings / 5) * 100}%` }}
-                ></div>
-              </div>
-              <span id="no_of_reviews">({product.numOfReviews} Reviews)</span>
-
-              <hr />
-
-              <p id="product_price">Rs. {product.price}</p>
-              <div className="stockCounter d-inline">
-                <span className="btn btn-danger minus">-</span>
-
-                <input
-                  type="number"
-                  className="form-control count d-inline"
-                  value="1"
-                  readOnly
-                />
-
-                <span className="btn btn-primary plus">+</span>
-              </div>
-              <button
-                type="button"
-                id="cart_btn"
-                className="btn btn-primary d-inline ml-4"
-              >
-                Add to Cart
-              </button>
-
-              <hr />
-
-              <h4 className="mt-2">Description:</h4>
-              <p>{product.description}</p>
+              <p>{noticeDetails.notice.content}</p>
               <hr />
 
               <button
@@ -94,7 +72,7 @@ const NoticeDetails = ({ match }) => {
                 data-toggle="modal"
                 data-target="#ratingModal"
               >
-                Submit Your Review
+                Edit
               </button>
 
               <div className="row mt-2 mb-5">
@@ -111,7 +89,7 @@ const NoticeDetails = ({ match }) => {
                       <div className="modal-content">
                         <div className="modal-header">
                           <h5 className="modal-title" id="ratingModalLabel">
-                            Submit Review
+                            Edit Notice
                           </h5>
                           <button
                             type="button"
@@ -123,37 +101,33 @@ const NoticeDetails = ({ match }) => {
                           </button>
                         </div>
                         <div className="modal-body">
-                          <ul className="stars">
-                            <li className="star">
-                              <i className="fa fa-star"></i>
-                            </li>
-                            <li className="star">
-                              <i className="fa fa-star"></i>
-                            </li>
-                            <li className="star">
-                              <i className="fa fa-star"></i>
-                            </li>
-                            <li className="star">
-                              <i className="fa fa-star"></i>
-                            </li>
-                            <li className="star">
-                              <i className="fa fa-star"></i>
-                            </li>
-                          </ul>
-
-                          <textarea
-                            name="review"
-                            id="review"
-                            className="form-control mt-3"
-                          ></textarea>
-
-                          <button
-                            className="btn my-3 float-right review-btn px-4 text-white"
-                            data-dismiss="modal"
-                            aria-label="Close"
-                          >
-                            Submit
-                          </button>
+                          <form onSubmit={submitHandler}>
+                            <div className="form-group">
+                              <label htmlFor="title">Title</label>
+                              <input
+                                type="text"
+                                className="form-control"
+                                id="title"
+                                name="updateTitle"
+                                value={updateNoticeData.updateTitle}
+                                onChange={onChange}
+                              />
+                            </div>
+                            <div className="form-group">
+                              <label htmlFor="content">Content</label>
+                              <textarea
+                                className="form-control"
+                                id="content"
+                                rows="3"
+                                name="updateContent"
+                                value={updateNoticeData.updateContent}
+                                onChange={onChange}
+                              ></textarea>
+                            </div>
+                            <button type="submit" className="btn btn-primary">
+                              Update
+                            </button>
+                          </form>
                         </div>
                       </div>
                     </div>

@@ -23,30 +23,30 @@ const Home = ({ match }) => {
 
   const {
     loading,
-    products,
+    notices,
     error,
-    productsCount,
+    noticesCount,
     resPerPage,
-    filteredProductsCount,
+    filteredNoticeCount,
   } = useSelector((state) => state.notices);
 
   const keyword = match.params.keyword;
 
-  // useEffect(() => {
-  //   if (error) {
-  //     return alert.error(error);
-  //   }
+  useEffect(() => {
+    if (error) {
+      return alert.error(error);
+    }
 
-  //   dispatch(getNotice(keyword, currentPage, price, category, rating));
-  // }, [dispatch, alert, error, keyword, currentPage, price, category, rating]);
+    dispatch(getNotice(keyword, currentPage, price, category, rating));
+  }, [dispatch, alert, error, keyword, currentPage, price, category, rating]);
 
   function setCurrentPageNo(pageNumber) {
     setCurrentPage(pageNumber);
   }
 
-  let count = productsCount;
+  let count = noticesCount;
   if (keyword) {
-    count = filteredProductsCount;
+    count = filteredNoticeCount;
   }
 
   return (
@@ -59,43 +59,10 @@ const Home = ({ match }) => {
 
           <section id="products" className="container mt-5">
             <div className="row">
-              {keyword ? (
-                <Fragment>
-                  <div className="col-6 col-md-3 mt-5 mb-5">
-                    <div className="px-5">
-                      <Range
-                        marks={{
-                          1: `Rs.1`,
-                          10000: `Rs.10000`,
-                        }}
-                        min={1}
-                        max={10000}
-                        defaultValue={[1, 10000]}
-                        tipFormatter={(value) => `Rs.${value}`}
-                        tipProps={{
-                          placement: "top",
-                          visible: true,
-                        }}
-                        value={price}
-                        onChange={(price) => setPrice(price)}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-6 col-md-9">
-                    <div className="row">
-                      {products.map((product) => (
-                        <Notice key={product._id} product={product} col={4} />
-                      ))}
-                    </div>
-                  </div>
-                </Fragment>
-              ) : (
-                <></>
-                // products.map((product) => (
-                //   <Product key={product._id} product={product} col={3} />
-                // ))
-              )}
+              {notices &&
+                notices.map((notice) => (
+                  <Notice key={notice._id} notice={notice} col={3} />
+                ))}
             </div>
           </section>
 
@@ -104,7 +71,7 @@ const Home = ({ match }) => {
               <Pagination
                 activePage={currentPage}
                 itemsCountPerPage={resPerPage}
-                totalItemsCount={productsCount}
+                totalItemsCount={noticesCount}
                 onChange={setCurrentPageNo}
                 nextPageText={"Next"}
                 prevPageText={"Prev"}

@@ -23,12 +23,12 @@ exports.getNotices = catchAsyncErrors (async (req, res, next) => {
     const resPerPage = 4;
     const noticesCount = await Notice.countDocuments()
 
-    const apiFeatures = new APIFeatures(Product.find(), req.query)
+    const apiFeatures = new APIFeatures(Notice.find(), req.query)
         .search()
         .filter()
         
     let notices = await apiFeatures.query;
-    let filteredNoticeCount = products.length;
+    let filteredNoticeCount = Notice.length;
 
     apiFeatures.pagination(resPerPage)
     notices = await apiFeatures.query;
@@ -39,7 +39,7 @@ exports.getNotices = catchAsyncErrors (async (req, res, next) => {
             noticesCount,
             resPerPage,
             filteredNoticeCount,
-            products
+            notices
         })
     //}, 2000);
 
@@ -97,4 +97,3 @@ exports.deleteNotice = catchAsyncErrors (async (req, res, next) => {
         message: 'notice is deleted'
     })
 })
-

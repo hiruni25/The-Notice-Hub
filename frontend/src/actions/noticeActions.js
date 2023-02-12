@@ -14,19 +14,23 @@ import {
 } from "../constants/noticeConstants";
 
 export const createNotice = (title, content) => async (dispatch) => {
-  console.log(title, content)
+  console.log(title, content);
   try {
     dispatch({ type: CREATE_NOTICE_REQUEST });
-    let token =   (localStorage.getItem("token"))
+    let token = localStorage.getItem("token");
 
     const config = {
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': token
+        "Content-Type": "application/json",
+        Authorization: token,
       },
     };
 
-    const { data } = await axios.post("http://localhost:4000/api/v1/notice", {title, content} , config);
+    const { data } = await axios.post(
+      "http://localhost:4000/api/v1/notice",
+      { title, content },
+      config
+    );
 
     dispatch({
       type: CREATE_NOTICE_SUCCESS,
@@ -70,15 +74,46 @@ export const getNoticeDetails = (id) => async (dispatch) => {
   try {
     dispatch({ type: NOTICE_DETAILS_REQUEST });
 
-    const { data } = await axios.get(`/api/v1/product/${id}`);
+    const { data } = await axios.get(`/api/v1/notice/${id}`);
 
     dispatch({
       type: NOTICE_DETAILS_SUCCESS,
-      payload: data.product,
+      payload: data.notice,
     });
   } catch (error) {
     dispatch({
       type: NOTICE_DETAILS_FAIL,
+      payload: error.response.data.message,
+    });
+  }
+};
+
+export const updateNotice = (title, content, id) => async (dispatch) => {
+  console.log(title, content);
+  try {
+    dispatch({ type: CREATE_NOTICE_REQUEST });
+    let token = localStorage.getItem("token");
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+      },
+    };
+
+    const { data } = await axios.put(
+      `http://localhost:4000/api/v1/notice/${id}`,
+      { title, content },
+      config
+    );
+
+    dispatch({
+      type: CREATE_NOTICE_SUCCESS,
+      payload: data,
+    });
+  } catch (error) {
+    dispatch({
+      type: CREATE_NOTICE_FAIL,
       payload: error.response.data.message,
     });
   }
